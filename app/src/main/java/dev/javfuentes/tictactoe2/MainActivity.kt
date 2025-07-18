@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,11 +27,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.javfuentes.tictactoe2.ui.theme.TicTacToe2Theme
 
 class MainActivity : ComponentActivity() {
@@ -51,6 +59,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TicTacToeGame() {
+    val context = LocalContext.current
+
     // Estado del juego
     var board by remember { mutableStateOf(Array(3) { Array(3) { "" } }) }
     var currentPlayer by remember { mutableStateOf("X") }
@@ -183,66 +193,185 @@ fun TicTacToeGame() {
         handleTurnStart()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Indicador de turno para X (arriba)
-        TurnIndicatorBox(
-            player = "X",
-            isActive = currentPlayer == "X" && !isGameOver,
-            showWeak = isGameOver && checkWinner() == "O",
-            isWinner = isGameOver && checkWinner() == "X",
-            onRestart = { 
-                val winner = checkWinner()
-                if (winner != null) {
-                    val loser = if (winner == "X") "O" else "X"
-                    resetGame(loser)
-                }
-            }
-        )
-
-        // Tablero del juego
+        // Layout principal
         Column(
             modifier = Modifier
-                .background(
-                    Color.Black, // Fondo negro para el contenedor del tablero
-                    RoundedCornerShape(12.dp)
-                )
-                .padding(8.dp)
+                .fillMaxSize()
+                .padding(72.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            for (i in 0..2) {
-                Row {
-                    for (j in 0..2) {
-                        GameCell(
-                            value = board[i][j],
-                            onClick = { makeMove(i, j) },
-                            isGameOver = isGameOver,
-                            winner = checkWinner(),
-                            isWinningPosition = winningPositions.contains(Pair(i, j))
-                        )
+            // Indicador de turno para X (arriba)
+            TurnIndicatorBox(
+                player = "X",
+                isActive = currentPlayer == "X" && !isGameOver,
+                showWeak = isGameOver && checkWinner() == "O",
+                isWinner = isGameOver && checkWinner() == "X",
+                onRestart = {
+                    val winner = checkWinner()
+                    if (winner != null) {
+                        val loser = if (winner == "X") "O" else "X"
+                        resetGame(loser)
+                    }
+                }
+            )
+
+            // Tablero del juego
+            Column(
+                modifier = Modifier
+                    .background(
+                        Color.Black, // Fondo negro para el contenedor del tablero
+                        RoundedCornerShape(12.dp)
+                    )
+                    .padding(8.dp)
+            ) {
+                for (i in 0..2) {
+                    Row {
+                        for (j in 0..2) {
+                            GameCell(
+                                value = board[i][j],
+                                onClick = { makeMove(i, j) },
+                                isGameOver = isGameOver,
+                                winner = checkWinner(),
+                                isWinningPosition = winningPositions.contains(Pair(i, j))
+                            )
+                        }
                     }
                 }
             }
+
+            // Indicador de turno para O (abajo)
+            TurnIndicatorBox(
+                player = "O",
+                isActive = currentPlayer == "O" && !isGameOver,
+                showWeak = isGameOver && checkWinner() == "X",
+                isWinner = isGameOver && checkWinner() == "O",
+                onRestart = {
+                    val winner = checkWinner()
+                    if (winner != null) {
+                        val loser = if (winner == "X") "O" else "X"
+                        resetGame(loser)
+                    }
+                }
+            )
         }
 
-        // Indicador de turno para O (abajo)
-        TurnIndicatorBox(
-            player = "O",
-            isActive = currentPlayer == "O" && !isGameOver,
-            showWeak = isGameOver && checkWinner() == "X",
-            isWinner = isGameOver && checkWinner() == "O",
-            onRestart = { 
-                val winner = checkWinner()
-                if (winner != null) {
-                    val loser = if (winner == "X") "O" else "X"
-                    resetGame(loser)
-                }
-            }
-        )
+        // Menú del jugador X (overlay alineado horizontalmente con su casilla)
+        if (isGameOver && checkWinner() == "O") {
+            LoserMenu(
+                isPlayerX = true,
+                onRematch = {
+                    val winner = checkWinner()
+                    if (winner != null) {
+                        val loser = if (winner == "X") "O" else "X"
+                        resetGame(loser)
+                    }
+                },
+                onQuit = {
+                    (context as ComponentActivity).finish()
+                },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(top = 58.dp, end = 16.dp)
+            )
+        }
+
+        // Menú del jugador O (overlay alineado horizontalmente con su casilla)
+        if (isGameOver && checkWinner() == "X") {
+            LoserMenu(
+                isPlayerX = false,
+                onRematch = {
+                    val winner = checkWinner()
+                    if (winner != null) {
+                        val loser = if (winner == "X") "O" else "X"
+                        resetGame(loser)
+                    }
+                },
+                onQuit = {
+                    (context as ComponentActivity).finish()
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 58.dp, end = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun LoserMenu(
+    isPlayerX: Boolean,
+    onRematch: () -> Unit,
+    onQuit: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .width(120.dp)
+            .background(
+                Color.Black,
+                RoundedCornerShape(8.dp)
+            )
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        if (isPlayerX) {
+            // Para jugador X (rotado 180°), orden inverso para que se vea correcto
+            // Texto Quit (se verá en el medio cuando esté rotado)
+            Text(
+                text = "QUIT",
+                color = Color.Gray.copy(alpha = 0.3f),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.romanus)),
+                modifier = Modifier
+                    .clickable { onQuit() }
+                    .rotate(180f)
+                    .padding(8.dp)
+            )
+
+            // Texto Rematch (se verá primero cuando esté rotado)
+            Text(
+                text = "REMATCH",
+                color = Color.Gray.copy(alpha = 0.3f),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.romanus)),
+                modifier = Modifier
+                    .clickable { onRematch() }
+                    .rotate(180f)
+                    .padding(8.dp)
+            )
+        } else {
+            // Para jugador O (sin rotación), orden normal
+            // Texto Rematch
+            Text(
+                text = "REMATCH",
+                color = Color.Gray.copy(alpha = 0.3f),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.romanus)),
+                modifier = Modifier
+                    .clickable { onRematch() }
+                    .padding(8.dp)
+            )
+
+            // Texto Quit
+            Text(
+                text = "QUIT",
+                color = Color.Gray.copy(alpha = 0.3f),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.romanus)),
+                modifier = Modifier
+                    .clickable { onQuit() }
+                    .padding(8.dp)
+            )
+        }
     }
 }
 
@@ -260,7 +389,7 @@ fun TurnIndicatorBox(
         isActive -> Color.White
         else -> Color.Gray.copy(alpha = 0.3f)
     }
-    
+
     Box(
         modifier = Modifier
             .size(80.dp)
@@ -283,7 +412,7 @@ fun TurnIndicatorBox(
                 player == "X" -> R.drawable.x
                 else -> R.drawable.o
             }
-            
+
             Image(
                 painter = painterResource(id = resourceId),
                 contentDescription = when {
@@ -306,7 +435,7 @@ fun GameCell(
     isWinningPosition: Boolean
 ) {
     val canClick = !isGameOver && (value.isEmpty() || value.endsWith("_weak"))
-    
+
     val borderColor = when {
         isWinningPosition && winner == "X" -> Color(0xFFf23c19)
         isWinningPosition && winner == "O" -> Color(0xFF34f6ec)

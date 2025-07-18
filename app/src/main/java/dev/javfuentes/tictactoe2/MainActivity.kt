@@ -15,12 +15,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,11 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.javfuentes.tictactoe2.ui.theme.TicTacToe2Theme
 
 class MainActivity : ComponentActivity() {
@@ -61,10 +54,10 @@ fun TicTacToeGame() {
     // Estado del juego
     var board by remember { mutableStateOf(Array(3) { Array(3) { "" } }) }
     var currentPlayer by remember { mutableStateOf("X") }
-    var gameStatus by remember { mutableStateOf("Turno del jugador: X") }
     var isGameOver by remember { mutableStateOf(false) }
     var playerXMoves by remember { mutableStateOf(listOf<Pair<Int, Int>>()) }
     var playerOMoves by remember { mutableStateOf(listOf<Pair<Int, Int>>()) }
+    var winningPositions by remember { mutableStateOf(listOf<Pair<Int, Int>>()) }
 
     // Función para verificar si hay un ganador (solo cuenta símbolos fuertes)
     fun checkWinner(): String? {
@@ -72,6 +65,7 @@ fun TicTacToeGame() {
         for (i in 0..2) {
             if (board[i][0] == board[i][1] && board[i][1] == board[i][2] &&
                 board[i][0].isNotEmpty() && !board[i][0].endsWith("_weak")) {
+                winningPositions = listOf(Pair(i, 0), Pair(i, 1), Pair(i, 2))
                 return board[i][0]
             }
         }
@@ -80,6 +74,7 @@ fun TicTacToeGame() {
         for (j in 0..2) {
             if (board[0][j] == board[1][j] && board[1][j] == board[2][j] &&
                 board[0][j].isNotEmpty() && !board[0][j].endsWith("_weak")) {
+                winningPositions = listOf(Pair(0, j), Pair(1, j), Pair(2, j))
                 return board[0][j]
             }
         }
@@ -87,10 +82,12 @@ fun TicTacToeGame() {
         // Verificar diagonales
         if (board[0][0] == board[1][1] && board[1][1] == board[2][2] &&
             board[0][0].isNotEmpty() && !board[0][0].endsWith("_weak")) {
+            winningPositions = listOf(Pair(0, 0), Pair(1, 1), Pair(2, 2))
             return board[0][0]
         }
         if (board[0][2] == board[1][1] && board[1][1] == board[2][0] &&
             board[0][2].isNotEmpty() && !board[0][2].endsWith("_weak")) {
+            winningPositions = listOf(Pair(0, 2), Pair(1, 1), Pair(2, 0))
             return board[0][2]
         }
 
@@ -156,14 +153,12 @@ fun TicTacToeGame() {
             val winner = checkWinner()
             when {
                 winner != null -> {
-                    gameStatus = "¡Jugador $winner ha ganado!"
                     isGameOver = true
                     // Marcar los símbolos del perdedor como débiles
                     markLoserSymbolsAsWeak(winner)
                 }
                 else -> {
                     currentPlayer = if (currentPlayer == "X") "O" else "X"
-                    gameStatus = "Turno del jugador: $currentPlayer"
                     // Manejar el inicio del nuevo turno
                     if (!isGameOver) {
                         handleTurnStart()
@@ -174,13 +169,13 @@ fun TicTacToeGame() {
     }
 
     // Función para reiniciar el juego
-    fun resetGame() {
+    fun resetGame(startingPlayer: String = "X") {
         board = Array(3) { Array(3) { "" } }
-        currentPlayer = "X"
-        gameStatus = "Turno del jugador: X"
+        currentPlayer = startingPlayer
         isGameOver = false
         playerXMoves = listOf()
         playerOMoves = listOf()
+        winningPositions = listOf()
     }
 
     // Inicializar el primer turno
@@ -193,25 +188,21 @@ fun TicTacToeGame() {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Título
-        Text(
-            text = "TIC TAC TOE",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White, // Texto blanco sobre fondo negro
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-
-        // Estado del juego
-        Text(
-            text = gameStatus,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.White, // Texto blanco sobre fondo negro
-            modifier = Modifier.padding(bottom = 24.dp),
-            textAlign = TextAlign.Center
+        // Indicador de turno para X (arriba)
+        TurnIndicatorBox(
+            player = "X",
+            isActive = currentPlayer == "X" && !isGameOver,
+            showWeak = isGameOver && checkWinner() == "O",
+            isWinner = isGameOver && checkWinner() == "X",
+            onRestart = { 
+                val winner = checkWinner()
+                if (winner != null) {
+                    val loser = if (winner == "X") "O" else "X"
+                    resetGame(loser)
+                }
+            }
         )
 
         // Tablero del juego
@@ -229,28 +220,78 @@ fun TicTacToeGame() {
                         GameCell(
                             value = board[i][j],
                             onClick = { makeMove(i, j) },
-                            isGameOver = isGameOver
+                            isGameOver = isGameOver,
+                            winner = checkWinner(),
+                            isWinningPosition = winningPositions.contains(Pair(i, j))
                         )
                     }
                 }
             }
         }
 
-        // Botón para reiniciar
-        Button(
-            onClick = { resetGame() },
-            modifier = Modifier
-                .padding(top = 32.dp)
-                .width(200.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
+        // Indicador de turno para O (abajo)
+        TurnIndicatorBox(
+            player = "O",
+            isActive = currentPlayer == "O" && !isGameOver,
+            showWeak = isGameOver && checkWinner() == "X",
+            isWinner = isGameOver && checkWinner() == "O",
+            onRestart = { 
+                val winner = checkWinner()
+                if (winner != null) {
+                    val loser = if (winner == "X") "O" else "X"
+                    resetGame(loser)
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun TurnIndicatorBox(
+    player: String,
+    isActive: Boolean,
+    showWeak: Boolean,
+    isWinner: Boolean,
+    onRestart: () -> Unit
+) {
+    val borderColor = when {
+        isWinner && player == "X" -> Color(0xFFf23c19)
+        isWinner && player == "O" -> Color(0xFF34f6ec)
+        isActive -> Color.White
+        else -> Color.Gray.copy(alpha = 0.3f)
+    }
+    
+    Box(
+        modifier = Modifier
+            .size(80.dp)
+            .background(
+                Color.Black,
+                RoundedCornerShape(12.dp)
             )
-        ) {
-            Text(
-                text = "Nuevo Juego",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+            .border(
+                2.dp,
+                borderColor,
+                RoundedCornerShape(12.dp)
+            )
+            .clickable(enabled = showWeak) { onRestart() },
+        contentAlignment = Alignment.Center
+    ) {
+        if (isActive || showWeak || isWinner) {
+            val resourceId = when {
+                showWeak && player == "X" -> R.drawable.x_weak
+                showWeak && player == "O" -> R.drawable.o_weak
+                player == "X" -> R.drawable.x
+                else -> R.drawable.o
+            }
+            
+            Image(
+                painter = painterResource(id = resourceId),
+                contentDescription = when {
+                    showWeak -> "$player débil - Presiona para reiniciar"
+                    isWinner -> "$player ganador"
+                    else -> player
+                },
+                modifier = Modifier.size(60.dp)
             )
         }
     }
@@ -260,9 +301,18 @@ fun TicTacToeGame() {
 fun GameCell(
     value: String,
     onClick: () -> Unit,
-    isGameOver: Boolean
+    isGameOver: Boolean,
+    winner: String?,
+    isWinningPosition: Boolean
 ) {
     val canClick = !isGameOver && (value.isEmpty() || value.endsWith("_weak"))
+    
+    val borderColor = when {
+        isWinningPosition && winner == "X" -> Color(0xFFf23c19)
+        isWinningPosition && winner == "O" -> Color(0xFF34f6ec)
+        canClick -> Color.White.copy(alpha = 0.3f)
+        else -> Color.Gray.copy(alpha = 0.5f)
+    }
 
     Box(
         modifier = Modifier
@@ -278,7 +328,7 @@ fun GameCell(
             )
             .border(
                 2.dp,
-                if (canClick) Color.White.copy(alpha = 0.3f) else Color.Gray.copy(alpha = 0.5f),
+                borderColor,
                 RoundedCornerShape(8.dp)
             )
             .clickable(enabled = canClick) { onClick() },

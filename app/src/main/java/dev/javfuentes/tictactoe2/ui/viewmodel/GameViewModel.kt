@@ -36,6 +36,13 @@ class GameViewModel(
         }
     }
     
+    fun newGame() {
+        viewModelScope.launch {
+            val newState = gameUseCase.newGame()
+            _gameState.value = newState
+        }
+    }
+    
     private fun initializeGame() {
         viewModelScope.launch {
             // Initialize with turn start logic

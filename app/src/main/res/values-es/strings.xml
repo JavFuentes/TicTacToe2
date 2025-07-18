@@ -4,6 +4,7 @@
     
     <!-- Game Menu -->
     <string name="menu_rematch">REVANCHA</string>
+    <string name="menu_new_game">NUEVO JUEGO</string>
     <string name="menu_quit">SALIR</string>
     
     <!-- Content Descriptions -->

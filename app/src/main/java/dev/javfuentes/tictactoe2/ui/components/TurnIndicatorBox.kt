@@ -23,9 +23,13 @@ fun TurnIndicatorBox(
     isActive: Boolean,
     showWeak: Boolean,
     isWinner: Boolean,
-    onRestart: () -> Unit
+    onRestart: () -> Unit,
+    isDefinitiveWin: Boolean = false,
+    definitiveWinner: Player? = null
 ) {
     val borderColor = when {
+        isDefinitiveWin && definitiveWinner == Player.X -> Color(0xFFf23c19)
+        isDefinitiveWin && definitiveWinner == Player.O -> Color(0xFF34f6ec)
         isWinner && player == Player.X -> Color(0xFFf23c19)
         isWinner && player == Player.O -> Color(0xFF34f6ec)
         isActive -> Color.White
@@ -47,8 +51,12 @@ fun TurnIndicatorBox(
             .clickable(enabled = showWeak) { onRestart() },
         contentAlignment = Alignment.Center
     ) {
-        if (isActive || showWeak || isWinner) {
+        if (isActive || showWeak || isWinner || isDefinitiveWin) {
             val resourceId = when {
+                isDefinitiveWin && definitiveWinner != null && definitiveWinner != player && player == Player.X -> R.drawable.x_weak
+                isDefinitiveWin && definitiveWinner != null && definitiveWinner != player && player == Player.O -> R.drawable.o_weak
+                isDefinitiveWin && definitiveWinner == player && player == Player.X -> R.drawable.x
+                isDefinitiveWin && definitiveWinner == player && player == Player.O -> R.drawable.o
                 showWeak && player == Player.X -> R.drawable.x_weak
                 showWeak && player == Player.O -> R.drawable.o_weak
                 player == Player.X -> R.drawable.x

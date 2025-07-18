@@ -3,6 +3,7 @@
     
     <!-- Game Menu -->
     <string name="menu_rematch">REMATCH</string>
+    <string name="menu_new_game">NEW GAME</string>
     <string name="menu_quit">QUIT</string>
     
     <!-- Content Descriptions -->

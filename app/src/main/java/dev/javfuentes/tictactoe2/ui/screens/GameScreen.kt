@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.javfuentes.tictactoe2.domain.model.Player
+import dev.javfuentes.tictactoe2.ui.components.DefinitiveWinMenu
 import dev.javfuentes.tictactoe2.ui.components.GameBoard
 import dev.javfuentes.tictactoe2.ui.components.LoserMenu
 import dev.javfuentes.tictactoe2.ui.components.ScoreContainer
@@ -62,13 +63,17 @@ fun GameScreen(
                             val loser = gameState.winner!!.opposite()
                             viewModel.resetGame(loser)
                         }
-                    }
+                    },
+                    isDefinitiveWin = gameState.isDefinitiveWin,
+                    definitiveWinner = gameState.definitiveWinner
                 )
                 
                 // Contenedor de puntuación para X (lado derecho de la pantalla, lado izquierdo del jugador)
                 ScoreContainer(
                     player = Player.X,
-                    wins = gameState.playerXWins
+                    wins = gameState.playerXWins,
+                    isDefinitiveWin = gameState.isDefinitiveWin,
+                    definitiveWinner = gameState.definitiveWinner
                 )
             }
 
@@ -89,7 +94,9 @@ fun GameScreen(
                 // Contenedor de puntuación para O (lado izquierdo)
                 ScoreContainer(
                     player = Player.O,
-                    wins = gameState.playerOWins
+                    wins = gameState.playerOWins,
+                    isDefinitiveWin = gameState.isDefinitiveWin,
+                    definitiveWinner = gameState.definitiveWinner
                 )
                 
                 // Indicador de turno para O
@@ -103,7 +110,9 @@ fun GameScreen(
                             val loser = gameState.winner!!.opposite()
                             viewModel.resetGame(loser)
                         }
-                    }
+                    },
+                    isDefinitiveWin = gameState.isDefinitiveWin,
+                    definitiveWinner = gameState.definitiveWinner
                 )
                 
                 // Espacio vacío para balance
@@ -111,13 +120,13 @@ fun GameScreen(
             }
         }
 
-        // Menú del jugador X (overlay alineado horizontalmente con su casilla)
-        if (gameState.isGameOver && gameState.winner == Player.O) {
-            LoserMenu(
+        // Menú de victoria definitiva o menú del perdedor
+        if (gameState.isDefinitiveWin) {
+            // Mostrar menú de victoria definitiva para ambos jugadores
+            DefinitiveWinMenu(
                 player = Player.X,
-                onRematch = {
-                    val loser = gameState.winner!!.opposite()
-                    viewModel.resetGame(loser)
+                onNewGame = {
+                    viewModel.newGame()
                 },
                 onQuit = {
                     (context as ComponentActivity).finish()
@@ -126,15 +135,11 @@ fun GameScreen(
                     .align(Alignment.TopStart)
                     .padding(top = 58.dp, end = 16.dp)
             )
-        }
-
-        // Menú del jugador O (overlay alineado horizontalmente con su casilla)
-        if (gameState.isGameOver && gameState.winner == Player.X) {
-            LoserMenu(
+            
+            DefinitiveWinMenu(
                 player = Player.O,
-                onRematch = {
-                    val loser = gameState.winner!!.opposite()
-                    viewModel.resetGame(loser)
+                onNewGame = {
+                    viewModel.newGame()
                 },
                 onQuit = {
                     (context as ComponentActivity).finish()
@@ -143,6 +148,40 @@ fun GameScreen(
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 58.dp, end = 16.dp)
             )
+        } else {
+            // Menú del jugador X (overlay alineado horizontalmente con su casilla)
+            if (gameState.isGameOver && gameState.winner == Player.O) {
+                LoserMenu(
+                    player = Player.X,
+                    onRematch = {
+                        val loser = gameState.winner!!.opposite()
+                        viewModel.resetGame(loser)
+                    },
+                    onQuit = {
+                        (context as ComponentActivity).finish()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(top = 58.dp, end = 16.dp)
+                )
+            }
+
+            // Menú del jugador O (overlay alineado horizontalmente con su casilla)
+            if (gameState.isGameOver && gameState.winner == Player.X) {
+                LoserMenu(
+                    player = Player.O,
+                    onRematch = {
+                        val loser = gameState.winner!!.opposite()
+                        viewModel.resetGame(loser)
+                    },
+                    onQuit = {
+                        (context as ComponentActivity).finish()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 58.dp, end = 16.dp)
+                )
+            }
         }
     }
 }

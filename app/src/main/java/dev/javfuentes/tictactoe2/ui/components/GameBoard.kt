@@ -35,7 +35,9 @@ fun GameBoard(
                         onClick = onCellClick,
                         isGameOver = gameState.isGameOver,
                         winner = gameState.winner,
-                        isWinningPosition = gameState.winningPositions.contains(position)
+                        isWinningPosition = gameState.winningPositions.contains(position),
+                        isDefinitiveWin = gameState.isDefinitiveWin,
+                        definitiveWinner = gameState.definitiveWinner
                     )
                 }
             }

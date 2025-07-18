@@ -18,7 +18,9 @@ import dev.javfuentes.tictactoe2.domain.model.Player
 fun ScoreContainer(
     player: Player,
     wins: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isDefinitiveWin: Boolean = false,
+    definitiveWinner: Player? = null
 ) {
     Column(
         modifier = modifier,
@@ -31,9 +33,15 @@ fun ScoreContainer(
                 contentAlignment = Alignment.Center
             ) {
                 if (index < wins) {
-                    val resourceId = when (player) {
-                        Player.X -> R.drawable.x
-                        Player.O -> R.drawable.o
+                    // Mostrar símbolos débiles si hay victoria definitiva y este jugador perdió
+                    val isLosingPlayer = isDefinitiveWin && definitiveWinner != null && definitiveWinner != player
+                    
+                    val resourceId = when {
+                        isLosingPlayer && player == Player.X -> R.drawable.x_weak
+                        isLosingPlayer && player == Player.O -> R.drawable.o_weak
+                        player == Player.X -> R.drawable.x
+                        player == Player.O -> R.drawable.o
+                        else -> R.drawable.x // fallback
                     }
                     
                     Image(

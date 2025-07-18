@@ -28,11 +28,15 @@ fun GameCell(
     onClick: (Position) -> Unit,
     isGameOver: Boolean,
     winner: Player?,
-    isWinningPosition: Boolean
+    isWinningPosition: Boolean,
+    isDefinitiveWin: Boolean = false,
+    definitiveWinner: Player? = null
 ) {
-    val canClick = !isGameOver && (cellState is CellState.Empty || cellState is CellState.Weak)
+    val canClick = !isGameOver && !isDefinitiveWin && (cellState is CellState.Empty || cellState is CellState.Weak)
     
     val borderColor = when {
+        isDefinitiveWin && definitiveWinner == Player.X -> Color(0xFFf23c19)
+        isDefinitiveWin && definitiveWinner == Player.O -> Color(0xFF34f6ec)
         isWinningPosition && winner == Player.X -> Color(0xFFf23c19)
         isWinningPosition && winner == Player.O -> Color(0xFF34f6ec)
         canClick -> Color.White.copy(alpha = 0.3f)
@@ -59,8 +63,20 @@ fun GameCell(
             .clickable(enabled = canClick) { onClick(position) },
         contentAlignment = Alignment.Center
     ) {
-        when (cellState) {
-            is CellState.Strong -> {
+        when {
+            isDefinitiveWin && definitiveWinner != null -> {
+                // En victoria definitiva, mostrar símbolo del ganador en casillas vacías
+                val resourceId = when (definitiveWinner) {
+                    Player.X -> R.drawable.x
+                    Player.O -> R.drawable.o
+                }
+                Image(
+                    painter = painterResource(id = resourceId),
+                    contentDescription = definitiveWinner.name,
+                    modifier = Modifier.size(60.dp)
+                )
+            }
+            cellState is CellState.Strong -> {
                 val resourceId = when (cellState.player) {
                     Player.X -> R.drawable.x
                     Player.O -> R.drawable.o
@@ -71,7 +87,7 @@ fun GameCell(
                     modifier = Modifier.size(60.dp)
                 )
             }
-            is CellState.Weak -> {
+            cellState is CellState.Weak -> {
                 val resourceId = when (cellState.player) {
                     Player.X -> R.drawable.x_weak
                     Player.O -> R.drawable.o_weak
@@ -82,8 +98,8 @@ fun GameCell(
                     modifier = Modifier.size(60.dp)
                 )
             }
-            is CellState.Empty -> {
-                // Empty cell - no image
+            cellState is CellState.Empty -> {
+                // Empty cell - no image (except in definitive win case handled above)
             }
         }
     }

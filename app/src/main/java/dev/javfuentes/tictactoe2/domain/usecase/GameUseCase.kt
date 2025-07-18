@@ -37,13 +37,19 @@ class GameUseCase {
             val newPlayerXWins = if (winner == Player.X) updatedGameState.playerXWins + 1 else updatedGameState.playerXWins
             val newPlayerOWins = if (winner == Player.O) updatedGameState.playerOWins + 1 else updatedGameState.playerOWins
             
+            // Verificar si hay victoria definitiva (3 victorias)
+            val isDefinitiveWin = newPlayerXWins >= 3 || newPlayerOWins >= 3
+            val definitiveWinner = if (newPlayerXWins >= 3) Player.X else if (newPlayerOWins >= 3) Player.O else null
+            
             updatedGameState.copy(
                 board = finalBoard,
                 isGameOver = true,
                 winner = winner,
                 winningPositions = winningPositions,
                 playerXWins = newPlayerXWins,
-                playerOWins = newPlayerOWins
+                playerOWins = newPlayerOWins,
+                isDefinitiveWin = isDefinitiveWin,
+                definitiveWinner = definitiveWinner
             )
         } else {
             val nextPlayer = gameState.currentPlayer.opposite()
@@ -61,8 +67,14 @@ class GameUseCase {
         return GameState(
             currentPlayer = startingPlayer,
             playerXWins = currentState?.playerXWins ?: 0,
-            playerOWins = currentState?.playerOWins ?: 0
+            playerOWins = currentState?.playerOWins ?: 0,
+            isDefinitiveWin = currentState?.isDefinitiveWin ?: false,
+            definitiveWinner = currentState?.definitiveWinner
         )
+    }
+    
+    fun newGame(): GameState {
+        return GameState()
     }
     
     private fun isCellPlayable(cellState: CellState): Boolean {

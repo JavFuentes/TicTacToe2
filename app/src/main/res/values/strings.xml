@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">TicTacToe2</string>
+    
+    <!-- Game Menu -->
+    <string name="menu_rematch">REMATCH</string>
+    <string name="menu_quit">QUIT</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_player_weak">%s weak</string>
+    <string name="cd_player_weak_restart">%s Press to restart</string>
+    <string name="cd_player_winner">%s winner</string>
+    <string name="cd_player_x">X</string>
+    <string name="cd_player_o">O</string>
 </resources>

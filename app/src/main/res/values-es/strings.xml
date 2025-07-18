@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TicTacToe2</string>
+    
+    <!-- Game Menu -->
+    <string name="menu_rematch">REVANCHA</string>
+    <string name="menu_quit">SALIR</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_player_weak">%s débil</string>
+    <string name="cd_player_weak_restart">%s Presiona para reiniciar</string>
+    <string name="cd_player_winner">%s ganador</string>
+    <string name="cd_player_x">X</string>
+    <string name="cd_player_o">O</string>
+</resources>

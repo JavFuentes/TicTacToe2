@@ -34,11 +34,16 @@ class GameUseCase {
         
         return if (winner != null) {
             val finalBoard = markLoserSymbolsAsWeak(newBoard, winner)
+            val newPlayerXWins = if (winner == Player.X) updatedGameState.playerXWins + 1 else updatedGameState.playerXWins
+            val newPlayerOWins = if (winner == Player.O) updatedGameState.playerOWins + 1 else updatedGameState.playerOWins
+            
             updatedGameState.copy(
                 board = finalBoard,
                 isGameOver = true,
                 winner = winner,
-                winningPositions = winningPositions
+                winningPositions = winningPositions,
+                playerXWins = newPlayerXWins,
+                playerOWins = newPlayerOWins
             )
         } else {
             val nextPlayer = gameState.currentPlayer.opposite()
@@ -52,8 +57,12 @@ class GameUseCase {
         }
     }
     
-    fun resetGame(startingPlayer: Player = Player.X): GameState {
-        return GameState(currentPlayer = startingPlayer)
+    fun resetGame(startingPlayer: Player = Player.X, currentState: GameState? = null): GameState {
+        return GameState(
+            currentPlayer = startingPlayer,
+            playerXWins = currentState?.playerXWins ?: 0,
+            playerOWins = currentState?.playerOWins ?: 0
+        )
     }
     
     private fun isCellPlayable(cellState: CellState): Boolean {

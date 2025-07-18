@@ -31,7 +31,7 @@ class GameViewModel(
     
     fun resetGame(startingPlayer: Player = Player.X) {
         viewModelScope.launch {
-            val newState = gameUseCase.resetGame(startingPlayer)
+            val newState = gameUseCase.resetGame(startingPlayer, _gameState.value)
             _gameState.value = newState
         }
     }

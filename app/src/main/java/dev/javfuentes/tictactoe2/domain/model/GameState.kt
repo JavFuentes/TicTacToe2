@@ -7,7 +7,9 @@ data class GameState(
     val winner: Player? = null,
     val playerXMoves: List<Position> = emptyList(),
     val playerOMoves: List<Position> = emptyList(),
-    val winningPositions: List<Position> = emptyList()
+    val winningPositions: List<Position> = emptyList(),
+    val playerXWins: Int = 0,
+    val playerOWins: Int = 0
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -22,6 +24,8 @@ data class GameState(
         if (playerXMoves != other.playerXMoves) return false
         if (playerOMoves != other.playerOMoves) return false
         if (winningPositions != other.winningPositions) return false
+        if (playerXWins != other.playerXWins) return false
+        if (playerOWins != other.playerOWins) return false
 
         return true
     }
@@ -34,6 +38,8 @@ data class GameState(
         result = 31 * result + playerXMoves.hashCode()
         result = 31 * result + playerOMoves.hashCode()
         result = 31 * result + winningPositions.hashCode()
+        result = 31 * result + playerXWins
+        result = 31 * result + playerOWins
         return result
     }
 }

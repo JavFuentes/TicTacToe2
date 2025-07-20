@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
@@ -34,7 +37,7 @@ fun LoserMenu(
     
     Column(
         modifier = modifier
-            .width(120.dp)
+            .widthIn(min = 120.dp, max = 160.dp)
             .background(
                 Color.Black,
                 RoundedCornerShape(8.dp)
@@ -52,6 +55,9 @@ fun LoserMenu(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = romanusFont,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .clickable { onQuit() }
                     .rotate(180f)
@@ -65,6 +71,9 @@ fun LoserMenu(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = romanusFont,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .clickable { onRematch() }
                     .rotate(180f)
@@ -79,6 +88,9 @@ fun LoserMenu(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = romanusFont,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .clickable { onRematch() }
                     .padding(8.dp)
@@ -91,6 +103,9 @@ fun LoserMenu(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = romanusFont,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .clickable { onQuit() }
                     .padding(8.dp)

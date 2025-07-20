@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TIC TAC TOE 2</string>
+    
+    <!-- Game Menu -->
+    <string name="menu_rematch">РЕВАНШ</string>
+    <string name="menu_new_game">НОВАЯ ИГРА</string>
+    <string name="menu_quit">ВЫЙТИ</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_player_weak">%s слабый</string>
+    <string name="cd_player_weak_restart">%s Нажмите для перезапуска</string>
+    <string name="cd_player_winner">%s победитель</string>
+    <string name="cd_player_x">X</string>
+    <string name="cd_player_o">O</string>
+</resources>

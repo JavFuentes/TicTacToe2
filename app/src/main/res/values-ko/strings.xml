@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TIC TAC TOE 2</string>
+    
+    <!-- Game Menu -->
+    <string name="menu_rematch">재경기</string>
+    <string name="menu_new_game">새게임</string>
+    <string name="menu_quit">종료</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_player_weak">%s 약함</string>
+    <string name="cd_player_weak_restart">%s 다시 시작하려면 누르세요</string>
+    <string name="cd_player_winner">%s 승자</string>
+    <string name="cd_player_x">X</string>
+    <string name="cd_player_o">O</string>
+</resources>

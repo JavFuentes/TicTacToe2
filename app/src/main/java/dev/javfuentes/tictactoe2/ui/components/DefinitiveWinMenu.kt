@@ -30,6 +30,7 @@ fun DefinitiveWinMenu(
     modifier: Modifier = Modifier
 ) {
     val isPlayerX = player == Player.X
+    val romanusFont = FontFamily(Font(R.font.romanus))
     
     Column(
         modifier = modifier
@@ -50,7 +51,7 @@ fun DefinitiveWinMenu(
                 color = Color.Gray.copy(alpha = 0.3f),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(Font(R.font.romanus)),
+                fontFamily = romanusFont,
                 modifier = Modifier
                     .clickable { onQuit() }
                     .rotate(180f)
@@ -63,7 +64,7 @@ fun DefinitiveWinMenu(
                 color = Color.Gray.copy(alpha = 0.3f),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(Font(R.font.romanus)),
+                fontFamily = romanusFont,
                 modifier = Modifier
                     .clickable { onNewGame() }
                     .rotate(180f)
@@ -77,7 +78,7 @@ fun DefinitiveWinMenu(
                 color = Color.Gray.copy(alpha = 0.3f),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(Font(R.font.romanus)),
+                fontFamily = romanusFont,
                 modifier = Modifier
                     .clickable { onNewGame() }
                     .padding(8.dp)
@@ -89,7 +90,7 @@ fun DefinitiveWinMenu(
                 color = Color.Gray.copy(alpha = 0.3f),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(Font(R.font.romanus)),
+                fontFamily = romanusFont,
                 modifier = Modifier
                     .clickable { onQuit() }
                     .padding(8.dp)

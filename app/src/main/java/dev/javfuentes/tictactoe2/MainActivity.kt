@@ -6,10 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import dev.javfuentes.tictactoe2.ui.screens.GameScreen
+import dev.javfuentes.tictactoe2.ui.screens.SplashScreen
 import dev.javfuentes.tictactoe2.ui.theme.TicTacToe2Theme
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,9 +24,25 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.Black
                 ) {
-                    GameScreen()
+                    AppNavigation()
                 }
             }
         }
+    }
+}
+
+@Composable
+fun AppNavigation() {
+    var showSplash by remember { mutableStateOf(true) }
+    
+    LaunchedEffect(Unit) {
+        delay(3000)
+        showSplash = false
+    }
+    
+    if (showSplash) {
+        SplashScreen()
+    } else {
+        GameScreen()
     }
 }

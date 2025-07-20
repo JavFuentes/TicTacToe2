@@ -2,6 +2,8 @@ package dev.javfuentes.tictactoe2.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.javfuentes.tictactoe2.domain.manager.SoundManager
+import dev.javfuentes.tictactoe2.domain.model.CellState
 import dev.javfuentes.tictactoe2.domain.model.GameState
 import dev.javfuentes.tictactoe2.domain.model.Player
 import dev.javfuentes.tictactoe2.domain.model.Position
@@ -12,7 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class GameViewModel(
-    private val gameUseCase: GameUseCase = GameUseCase()
+    private val gameUseCase: GameUseCase = GameUseCase(),
+    private val soundManager: SoundManager? = null
 ) : ViewModel() {
     
     private val _gameState = MutableStateFlow(GameState())
@@ -24,8 +27,26 @@ class GameViewModel(
     
     fun makeMove(position: Position) {
         viewModelScope.launch {
-            val newState = gameUseCase.makeMove(_gameState.value, position)
+            val currentState = _gameState.value
+            
+            // Only play click sound if the move is valid (not game over and cell is playable)
+            if (!currentState.isGameOver && !currentState.isDefinitiveWin) {
+                val cellState = currentState.board[position.row][position.col]
+                if (cellState is CellState.Empty || cellState is CellState.Weak) {
+                    soundManager?.playClickSound()
+                }
+            }
+            
+            val newState = gameUseCase.makeMove(currentState, position)
             _gameState.value = newState
+            
+            // Play appropriate victory sound
+            if (newState.winner != null && currentState.winner == null) {
+                when {
+                    newState.isDefinitiveWin -> soundManager?.playDefinitiveWinSound()
+                    else -> soundManager?.playWinSound()
+                }
+            }
         }
     }
     
@@ -49,5 +70,10 @@ class GameViewModel(
             val initialState = gameUseCase.resetGame()
             _gameState.value = initialState
         }
+    }
+    
+    override fun onCleared() {
+        super.onCleared()
+        soundManager?.release()
     }
 }
